@@ -39,11 +39,12 @@ class Block{
 
 class Blockchain{
   constructor(){
-  this._dbexists = false
-  this.addBlock(new Block("First block in the chain - Genesis block"));
+    this._dbexists = false // 
+    this.addBlock(new Block("First block in the chain - Genesis block"));
   }
 
   async getBlockHeight(){
+    // Returns the height of the chain
     let h = await new Promise(function(resolve){
       let i = 0;
       db.createReadStream().on('data', function(data) {
@@ -58,6 +59,7 @@ class Blockchain{
   }
 
   async getBlock(blockHeight){
+    // Returns the block of particular height
     let blk = await new Promise(function(resolve){
       db.get(blockHeight)
         .then((value) => resolve(value))
@@ -66,8 +68,9 @@ class Blockchain{
   }
 
   async addBlock(newBlock){
+    // Add a block
+    // If it is the genesis block it checks if blockchain exists otherwise it is not added
     let h = await this.getBlockHeight()
-
     if (h === 0){
       console.log("Adds genesis")
       // Update the block
@@ -96,6 +99,7 @@ class Blockchain{
   }
 
   async validateBlock(blockHeight){
+    // Validates a particular block 
     return await new Promise(function(resolve){
       // read the block from the db
       db.get(blockHeight)
@@ -119,6 +123,7 @@ class Blockchain{
   }
 
   async validateChain(){
+    // Validates the whole chain
     let errorLog = []
     let h = await this.getBlockHeight()
     let block = await this.getBlock(0);
@@ -130,7 +135,6 @@ class Blockchain{
       if (i > 0){
         let block = await this.getBlock(i);
         let previousHash = block.previousBlockHash
-
         if (blockHash!==previousHash) {
           errorLog.push(i);
         }
@@ -145,12 +149,3 @@ class Blockchain{
     }
   }
 }
-
-// Testing area
-
-let blockchain = new Blockchain()
-
-blockchain.validateChain()
-
-// blockchain.getBlock(2).then((value) => console.log(value.hash))
-
