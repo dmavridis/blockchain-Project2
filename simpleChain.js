@@ -130,7 +130,7 @@ class Blockchain{
     let blockHash = block.hash 
 
     for (var i = 0; i < h ; i++){
-      if (!this.validateBlock(i))errorLog.push(i)
+      if (!await this.validateBlock(i))errorLog.push(i)
       // compare blocks hash link
       if (i > 0){
         let block = await this.getBlock(i);
